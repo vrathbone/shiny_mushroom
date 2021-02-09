@@ -1,23 +1,41 @@
 library(tidyverse)
 library(shiny)
+library(shinythemes)
+library(bslib)
+library(here)
 
-ui <- fluidPage(theme = "ocean.css",
-                
-                navbarPage("THIS IS MY TITLE!",
-                           tabPanel("Thing 1",
+
+#Read in data
+#mushrooms <- read_csv(here("data", "mushrooms.csv"))
+
+
+
+ui <- fluidPage(
+                navbarPage("Mushroom Foraging: A Beginer's Guide",
+                           theme = bs_theme(version = 4, bootswatch = "minty"),
+                           tabPanel("Getting Started",
                                     sidebarLayout(
-                                      sidebarPanel("WIDGETS!",
-                                                   checkboxGroupInput(inputId = "pick_species",
-                                                                      label = "Choose species:",
-                                                                      choices = unique(starwars$species)
-                                                   )
+                                      sidebarPanel(h3("Filtering options",class = "text-success"),
+                                                   checkboxGroupInput(inputId = "pick_variety",
+                                                                      label = "Choose a variety:",
+                                                                      choices = c("Edible",
+                                                                                  "Poisonous",
+                                                                                  "Other")), 
+                                                   selectInput(inputId = "pick_species", 
+                                                               label = "Choose a species", 
+                                                               choices = c("idk")), 
+                                                   actionButton(inputId = "go", 
+                                                                label = "Forage!", 
+                                                                status = "primary")
                                       ),
-                                      mainPanel("OUTPUT!",
-                                                plotOutput("sw_plot"))
+                                      mainPanel(h1("OUTPUT!", class = "text-secondary"),
+                                                icon("list", "fa-6x"), 
+                                                actionButton(inputId = "download_mush", 
+                                                             label= "Download list")),
                                     )
                            ),
-                           tabPanel("Thing 2"),
-                           tabPanel("Thing 3")
+                           tabPanel("Find Your Foraging Grounds"),
+                           tabPanel("About")
                            
                 )
                 
@@ -25,17 +43,7 @@ ui <- fluidPage(theme = "ocean.css",
 
 server <- function(input, output) {
   
-  sw_reactive <- reactive({
-    
-    starwars %>%
-      filter(species %in% input$pick_species)
-    
-  })
-  
-  output$sw_plot <- renderPlot(
-    ggplot(data = sw_reactive(), aes(x = mass, y = height)) +
-      geom_point(aes(color = species))
-  )
+
   
 }
 
